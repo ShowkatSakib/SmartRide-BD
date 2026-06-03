@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
-import { Home, GitCompare, Zap, BookOpen } from "lucide-react";
+import { Home, BarChart2, Zap, BookOpen } from "lucide-react";
 import clsx from "clsx";
 import HomePage from "./pages/HomePage";
 import ComparePage from "./pages/ComparePage";
@@ -9,7 +9,7 @@ import FareInfoPage from "./pages/FareInfoPage";
 
 const NAV = [
   { path: "/",        label: "Ride",    Icon: Home },
-  { path: "/compare", label: "Compare", Icon: GitCompare },
+  { path: "/compare", label: "Compare", Icon: BarChart2 },
   { path: "/surge",   label: "Surge",   Icon: Zap },
   { path: "/fares",   label: "Fares",   Icon: BookOpen },
 ];

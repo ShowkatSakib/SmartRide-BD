@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { Loader2, GitCompare } from "lucide-react";
+import { Loader2, BarChart2 } from "lucide-react";
 import toast from "react-hot-toast";
 import LocationInput from "../components/LocationInput";
 import { compareRides } from "../utils/api";
@@ -69,7 +69,7 @@ export default function ComparePage() {
           </select>
         </div>
         <button className="btn-primary" onClick={submit} disabled={mutation.isPending}>
-          {mutation.isPending ? <><Loader2 size={15} className="animate-spin"/>Comparing…</> : <><GitCompare size={15}/>Compare All</>}
+          {mutation.isPending ? <><Loader2 size={15} className="animate-spin"/>Comparing…</> : <><BarChart2 size={15}/>Compare All</>}
         </button>
       </div>
 

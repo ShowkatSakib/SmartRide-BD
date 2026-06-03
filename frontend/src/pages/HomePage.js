@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { Loader2, Navigation, RotateCcw, CloudRain, Clock, Info, ArrowLeftRight } from "lucide-react";
+import { Loader2, Navigation, RotateCcw, CloudRain, Clock, Info, ArrowUpDown } from "lucide-react";
 import toast from "react-hot-toast";
 import LocationInput from "../components/LocationInput";
 import RideCard from "../components/RideCard";
@@ -73,7 +73,7 @@ export default function HomePage() {
         <div className="flex justify-center my-1 mb-3">
           <button onClick={swap}
             className="flex items-center gap-1.5 text-xs text-[#666685] hover:text-orange-400 bg-[#1e1e2a] border border-[#2e2e3f] rounded-full px-3 py-1.5 transition-colors">
-            <ArrowLeftRight size={12} /> Swap
+            <ArrowUpDown size={12} /> Swap
           </button>
         </div>
 
