@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="theme-color" content="#0f0f14"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<title>SmartRide BD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0f0f14;--bg2:#16161e;--bg3:#1e1e2a;--bg4:#252533;
+  --border:#2e2e3f;--border2:#3a3a50;
+  --text:#e8e8f4;--text2:#a0a0c0;--text3:#666685;
+  --orange:#f97316;--orange2:#fb923c;--orangeD:#c2500a;
+  --green:#22c55e;--red:#ef4444;--yellow:#eab308;--blue:#3b82f6;
+  --radius:14px;--radius-sm:10px;--radius-xs:8px;
+  --shadow:0 4px 20px rgba(0,0,0,0.4);
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;overflow-x:hidden}
+h1,h2,h3,h4{font-family:'Syne',sans-serif}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* NAV */
+.nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--bg2);border-top:1px solid var(--border);display:flex;padding-bottom:env(safe-area-inset-bottom)}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:10px 4px;cursor:pointer;transition:.2s;border:none;background:none;color:var(--text3);font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.nav-btn.active{color:var(--orange)}
+.nav-btn svg{width:20px;height:20px;transition:.2s}
+.nav-btn.active svg{filter:drop-shadow(0 0 6px var(--orange))}
+
+/* PAGES */
+.pages{height:100%;overflow:hidden}
+.page{position:fixed;top:0;left:0;right:0;bottom:60px;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0;opacity:0;pointer-events:none;transform:translateY(8px);transition:.25s ease}
+.page.active{opacity:1;pointer-events:all;transform:translateY(0)}
+
+/* COMMON */
+.px{padding:0 16px}
+.section{margin-bottom:12px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.card-body{padding:14px}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+.chip-orange{background:rgba(249,115,22,.12);color:var(--orange);border:1px solid rgba(249,115,22,.25)}
+.chip-green{background:rgba(34,197,94,.1);color:var(--green)}
+.chip-red{background:rgba(239,68,68,.1);color:var(--red)}
+.chip-yellow{background:rgba(234,179,8,.1);color:var(--yellow)}
+.chip-blue{background:rgba(59,130,246,.1);color:var(--blue)}
+.chip-gray{background:var(--bg3);color:var(--text2)}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;border:none;transition:.15s;-webkit-appearance:none}
+.btn-primary{background:var(--orange);color:#fff;box-shadow:0 4px 16px rgba(249,115,22,.3)}
+.btn-primary:active{background:var(--orangeD);transform:scale(.98)}
+.btn-ghost{background:var(--bg3);color:var(--text);border:1px solid var(--border2)}
+.btn-ghost:active{background:var(--bg4)}
+.field-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px}
+.field{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:13px 14px;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--text);outline:none;appearance:none;-webkit-appearance:none;transition:.15s}
+.field:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(249,115,22,.1)}
+.field::placeholder{color:var(--text3)}
+select.field{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666685' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+.divider{height:1px;background:var(--border);margin:12px 0}
+
+/* HEADER */
+.page-header{padding:56px 16px 16px;background:linear-gradient(180deg,var(--bg) 0%,transparent 100%);position:sticky;top:0;z-index:10;backdrop-filter:blur(10px)}
+.page-title{font-size:26px;font-weight:800;color:var(--text);line-height:1.1}
+.page-title span{color:var(--orange)}
+.page-sub{font-size:13px;color:var(--text2);margin-top:4px}
+
+/* AUTOCOMPLETE */
+.autocomplete-wrap{position:relative}
+.autocomplete-list{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-sm);z-index:200;max-height:220px;overflow-y:auto;box-shadow:var(--shadow)}
+.autocomplete-item{padding:12px 14px;font-size:14px;color:var(--text2);cursor:pointer;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
+.autocomplete-item:last-child{border-bottom:none}
+.autocomplete-item:active,.autocomplete-item.highlighted{background:var(--bg3);color:var(--text)}
+.autocomplete-icon{width:28px;height:28px;background:var(--bg3);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* RIDE CARDS */
+.ride-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px;transition:.15s;position:relative;overflow:hidden}
+.ride-card.recommended{border-color:rgba(249,115,22,.4);background:rgba(249,115,22,.04)}
+.ride-card-accent{position:absolute;left:0;top:0;bottom:0;width:3px}
+.ride-card-top{display:flex;align-items:center;gap:12px}
+.ride-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.ride-info{flex:1;min-width:0}
+.ride-name{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--text);line-height:1}
+.ride-meta{font-size:12px;color:var(--text2);margin-top:3px}
+.ride-fare{text-align:right;flex-shrink:0}
+.ride-price{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--text);line-height:1}
+.ride-range{font-size:11px;color:var(--text3);margin-top:2px}
+.ride-surge{font-size:11px;font-weight:600;margin-top:2px}
+.ride-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.rec-badge{position:absolute;top:0;right:0;background:var(--orange);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:0 var(--radius) 0 var(--radius-xs)}
+
+/* RECOMMENDATION BOX */
+.rec-box{background:linear-gradient(135deg,rgba(249,115,22,.12),rgba(249,115,22,.05));border:1px solid rgba(249,115,22,.3);border-radius:var(--radius);padding:14px;margin-bottom:12px}
+.rec-box-title{font-size:10px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px}
+.rec-box-name{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--text);margin-bottom:4px}
+.rec-box-reason{font-size:13px;color:var(--text2);line-height:1.4}
+.rec-box-stats{display:flex;gap:14px;margin-top:10px}
+.rec-stat{text-align:center}
+.rec-stat-val{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--orange)}
+.rec-stat-label{font-size:10px;color:var(--text3);margin-top:1px}
+
+/* SURGE METER */
+.surge-meter{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center}
+.surge-value{font-family:'Syne',sans-serif;font-size:56px;font-weight:800;line-height:1}
+.surge-track{height:8px;background:var(--bg4);border-radius:4px;overflow:hidden;margin:10px 0}
+.surge-fill{height:100%;border-radius:4px;transition:width .5s ease}
+
+/* COMPARE TABLE */
+.compare-table{width:100%;border-collapse:collapse}
+.compare-table th{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;padding:8px 10px;text-align:left;border-bottom:1px solid var(--border)}
+.compare-table th:not(:first-child){text-align:right}
+.compare-table td{padding:11px 10px;border-bottom:1px solid var(--border);font-size:13px}
+.compare-table td:not(:first-child){text-align:right}
+.compare-table tr:last-child td{border-bottom:none}
+.compare-table tr.rec-row{background:rgba(249,115,22,.05)}
+.t-name{font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px}
+.t-price{font-family:'Syne',sans-serif;font-weight:700;color:var(--text)}
+.t-time{color:var(--text2)}
+
+/* ANALYTICS */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.stat-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.stat-val{font-family:'Syne',sans-serif;font-size:22px;font-weight:800}
+.stat-lbl{font-size:11px;color:var(--text3);margin-top:3px}
+.bar-chart{display:flex;align-items:flex-end;gap:2px;height:80px;padding:0 4px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+.bar{flex:1;border-radius:3px 3px 0 0;width:100%;transition:.3s;min-height:4px}
+.bar-lbl{font-size:8px;color:var(--text3)}
+.donut-row{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.donut-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.donut-name{font-size:13px;color:var(--text);flex:1}
+.donut-pct{font-family:'Syne',sans-serif;font-size:14px;font-weight:700}
+.donut-bar{height:4px;border-radius:2px;margin-top:3px;transition:width .8s ease}
+
+/* WEATHER GRID */
+.weather-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.weather-opt{background:var(--bg3);border:2px solid var(--border);border-radius:var(--radius-sm);padding:10px 6px;text-align:center;cursor:pointer;transition:.15s;font-size:12px;color:var(--text2)}
+.weather-opt.active{border-color:var(--orange);background:rgba(249,115,22,.08);color:var(--text)}
+.weather-opt .wx-icon{font-size:22px;margin-bottom:4px}
+.weather-opt:active{transform:scale(.97)}
+
+/* SHIMMER */
+.shimmer{background:linear-gradient(90deg,var(--bg3) 25%,var(--bg4) 50%,var(--bg3) 75%);background-size:200% 100%;animation:shimmer 1.2s ease-in-out infinite;border-radius:8px}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.skeleton-card{height:90px;margin-bottom:10px}
+
+/* TOAST */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--bg2);color:var(--text);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:10px 18px;font-size:13px;font-weight:500;z-index:999;transition:.3s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;box-shadow:var(--shadow)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.error{border-color:var(--red);background:rgba(239,68,68,.1);color:var(--red)}
+.toast.success{border-color:var(--green);background:rgba(34,197,94,.08);color:var(--green)}
+
+/* FARE NOTE */
+.fare-note{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-xs);padding:10px 12px;font-size:12px;color:var(--text2);line-height:1.5;margin-top:8px}
+.fare-note strong{color:var(--text)}
+
+/* ROUTE CHIPS */
+.route-chips{display:flex;gap:7px;overflow-x:auto;padding:2px 0 6px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.route-chips::-webkit-scrollbar{display:none}
+.route-chip{flex-shrink:0;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:7px 12px;font-size:12px;color:var(--text2);cursor:pointer;white-space:nowrap;transition:.15s;display:flex;align-items:center;gap:4px}
+.route-chip:active{background:var(--bg4);color:var(--text)}
+
+/* HOUR SLIDER */
+.hour-display{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--orange)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;background:var(--bg4);border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:var(--orange);cursor:pointer;box-shadow:0 0 0 3px rgba(249,115,22,.2)}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--orange);cursor:pointer;border:none}
+
+/* DISCLAIMER */
+.disclaimer{font-size:11px;color:var(--text3);text-align:center;padding:8px 16px;line-height:1.5}
+
+@media(min-width:480px){
+  .page{max-width:480px;left:50%;transform:translateX(-50%) translateY(8px)}
+  .page.active{transform:translateX(-50%) translateY(0)}
+  .nav{max-width:480px;left:50%;transform:translateX(-50%)}
+}
+
+/* FADE IN */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .3s ease forwards}
+.fade-up-d1{animation-delay:.05s;opacity:0}
+.fade-up-d2{animation-delay:.1s;opacity:0}
+.fade-up-d3{animation-delay:.15s;opacity:0}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="nav-btn active" onclick="showPage('home')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+    Ride
+  </button>
+  <button class="nav-btn" onclick="showPage('compare')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+    Compare
+  </button>
+  <button class="nav-btn" onclick="showPage('surge')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+    Surge
+  </button>
+  <button class="nav-btn" onclick="showPage('info')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+    Fares
+  </button>
+</nav>
+
+<!-- ═══════════════════════════════════════════ HOME PAGE -->
+<div class="page active" id="page-home">
+  <div class="page-header">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+      <div style="width:32px;height:32px;background:var(--orange);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:#fff">SR</div>
+      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800">SmartRide <span style="color:var(--orange)">BD</span></div>
+      <div class="chip chip-orange" style="margin-left:auto;font-size:10px">AI-Powered</div>
+    </div>
+  </div>
+
+  <div class="px">
+    <!-- FORM -->
+    <div class="card section">
+      <div class="card-body">
+        <!-- PICKUP -->
+        <div class="section" style="margin-bottom:10px">
+          <div class="field-label">📍 Pickup</div>
+          <div class="autocomplete-wrap">
+            <input class="field" id="pickup" placeholder="Search pickup location…" autocomplete="off" oninput="autocomplete(this,'pickup-list')" onfocus="showSuggestions('pickup-list',this.value)"/>
+            <div class="autocomplete-list" id="pickup-list" style="display:none"></div>
+          </div>
+        </div>
+
+        <!-- SWAP -->
+        <div style="text-align:center;margin:-4px 0 6px">
+          <button onclick="swapLocations()" style="background:var(--bg3);border:1px solid var(--border2);border-radius:50%;width:32px;height:32px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;color:var(--text2)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+          </button>
+        </div>
+
+        <!-- DESTINATION -->
+        <div class="section" style="margin-bottom:12px">
+          <div class="field-label">🏁 Destination</div>
+          <div class="autocomplete-wrap">
+            <input class="field" id="destination" placeholder="Search destination…" autocomplete="off" oninput="autocomplete(this,'dest-list')" onfocus="showSuggestions('dest-list',this.value)"/>
+            <div class="autocomplete-list" id="dest-list" style="display:none"></div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- WEATHER & TIME ROW -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+          <div>
+            <div class="field-label">🌤️ Weather</div>
+            <select class="field" id="weather">
+              <option value="clear">Clear ☀️</option>
+              <option value="cloudy">Cloudy ⛅</option>
+              <option value="rain">Rain 🌧️</option>
+              <option value="heavy_rain">Heavy Rain 🌩️</option>
+              <option value="storm">Storm ⛈️</option>
+            </select>
+          </div>
+          <div>
+            <div class="field-label" style="display:flex;justify-content:space-between">
+              <span>🕐 Time</span>
+              <span class="hour-display" id="hour-display">—</span>
+            </div>
+            <input type="range" id="hour-slider" min="0" max="23" value="8" oninput="updateHour(this.value)" style="margin-top:10px"/>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="predict()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          Find Best Ride
+        </button>
+      </div>
+    </div>
+
+    <!-- QUICK ROUTES -->
+    <div class="section">
+      <div class="field-label" style="margin-bottom:8px">Popular Routes</div>
+      <div class="route-chips" id="quick-routes"></div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="results" style="display:none">
+      <div id="rec-box-wrap"></div>
+      <div id="ride-cards"></div>
+      <div class="disclaimer">⚠️ Estimates based on published fares. Actual fares may differ due to surge, negotiation, or real-time conditions. Always confirm fare in the app or with the driver before riding.</div>
+    </div>
+
+    <!-- SKELETONS -->
+    <div id="skeletons" style="display:none">
+      <div class="shimmer skeleton-card"></div>
+      <div class="shimmer skeleton-card"></div>
+      <div class="shimmer skeleton-card"></div>
+    </div>
+
+    <div style="height:20px"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ COMPARE PAGE -->
+<div class="page" id="page-compare">
+  <div class="page-header">
+    <div class="page-title">Compare <span>All Rides</span></div>
+    <div class="page-sub">Side-by-side fare & time table</div>
+  </div>
+  <div class="px">
+    <div class="card section">
+      <div class="card-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+          <div>
+            <div class="field-label">📍 Pickup</div>
+            <div class="autocomplete-wrap">
+              <input class="field" id="c-pickup" placeholder="Pickup" autocomplete="off" oninput="autocomplete(this,'c-pickup-list')" onfocus="showSuggestions('c-pickup-list',this.value)"/>
+              <div class="autocomplete-list" id="c-pickup-list" style="display:none"></div>
+            </div>
+          </div>
+          <div>
+            <div class="field-label">🏁 Destination</div>
+            <div class="autocomplete-wrap">
+              <input class="field" id="c-dest" placeholder="Destination" autocomplete="off" oninput="autocomplete(this,'c-dest-list')" onfocus="showSuggestions('c-dest-list',this.value)"/>
+              <div class="autocomplete-list" id="c-dest-list" style="display:none"></div>
+            </div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+          <div>
+            <div class="field-label">🌤️ Weather</div>
+            <select class="field" id="c-weather">
+              <option value="clear">Clear ☀️</option>
+              <option value="cloudy">Cloudy ⛅</option>
+              <option value="rain">Rain 🌧️</option>
+              <option value="heavy_rain">Heavy Rain 🌩️</option>
+              <option value="storm">Storm ⛈️</option>
+            </select>
+          </div>
+          <div>
+            <div class="field-label" style="display:flex;justify-content:space-between"><span>🕐 Time</span><span class="hour-display" id="c-hour-display">—</span></div>
+            <input type="range" id="c-hour-slider" min="0" max="23" value="8" oninput="updateHour(this.value,'c-hour-display')" style="margin-top:10px"/>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="compareAll()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          Compare All
+        </button>
+      </div>
+    </div>
+
+    <div id="compare-results" style="display:none">
+      <div id="compare-table-wrap"></div>
+      <div id="compare-bars-wrap" class="card section"><div class="card-body" id="compare-bars"></div></div>
+      <div class="disclaimer">⚠️ Estimates only. Surge pricing, traffic & negotiation will affect actual fares.</div>
+    </div>
+    <div style="height:20px"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ SURGE PAGE -->
+<div class="page" id="page-surge">
+  <div class="page-header">
+    <div class="page-title">Surge <span>Pricing</span></div>
+    <div class="page-sub">How time & weather affect fares</div>
+  </div>
+  <div class="px">
+    <!-- WEATHER SELECT -->
+    <div class="section">
+      <div class="field-label" style="margin-bottom:8px">Current Weather</div>
+      <div class="weather-grid" id="surge-weather-grid"></div>
+    </div>
+
+    <!-- TIME -->
+    <div class="card section">
+      <div class="card-body">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div class="field-label">🕐 Time of Day</div>
+          <div class="hour-display" id="surge-hour-display">—</div>
+        </div>
+        <input type="range" id="surge-hour" min="0" max="23" value="8" oninput="updateSurge()"/>
+        <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--text3)">
+          <span>12 AM</span><span>6 AM</span><span>12 PM</span><span>6 PM</span><span>11 PM</span>
+        </div>
+        <!-- QUICK TIME BUTTONS -->
+        <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+          <button onclick="setHourQuick(8)" class="btn btn-ghost" style="flex:1;padding:8px;font-size:11px">Morning Rush</button>
+          <button onclick="setHourQuick(13)" class="btn btn-ghost" style="flex:1;padding:8px;font-size:11px">Lunch</button>
+          <button onclick="setHourQuick(18)" class="btn btn-ghost" style="flex:1;padding:8px;font-size:11px">Evening Rush</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIVE SURGE -->
+    <div class="surge-meter section" id="surge-display">
+      <div id="surge-num" class="surge-value">—</div>
+      <div id="surge-label" style="font-size:14px;font-weight:600;color:var(--text2);margin:4px 0">—</div>
+      <div class="surge-track"><div class="surge-fill" id="surge-bar" style="width:0%"></div></div>
+      <div id="surge-reason" style="font-size:13px;color:var(--text2);margin-top:6px">—</div>
+    </div>
+
+    <!-- FARE IMPACT -->
+    <div class="section">
+      <div class="field-label" style="margin-bottom:8px">💸 Fare Impact on ৳150 Base Ride</div>
+      <div id="surge-impact" class="card"><div class="card-body">—</div></div>
+    </div>
+
+    <!-- 24H CHART -->
+    <div class="card section">
+      <div class="card-body">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:4px">24-Hour Surge Forecast</div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:10px">Tap bars to see details</div>
+        <div class="bar-chart" id="surge-chart"></div>
+        <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:10px;color:var(--text3)">
+          <span>12am</span><span>6am</span><span>12pm</span><span>6pm</span><span>11pm</span>
+        </div>
+      </div>
+    </div>
+    <div style="height:20px"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ INFO PAGE -->
+<div class="page" id="page-info">
+  <div class="page-header">
+    <div class="page-title">Fare <span>Reference</span></div>
+    <div class="page-sub">Real published rates in Dhaka</div>
+  </div>
+  <div class="px" id="fare-info-content"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// DATA — REAL DHAKA FARES (verified from official sources)
+// ═══════════════════════════════════════════════════════
+
+const TRANSPORTS = [
+  {
+    id:'uber_moto', name:'Uber Moto', emoji:'🏍️', color:'#F59E0B',
+    baseFare:30, perKm:12, perMin:0.5, minFare:50,
+    avgSpeedKmh:28, capacity:1, ac:false,
+    note:'Official Uber pricing (Tk 30 base + Tk 12/km)',
+    source:'Uber Bangladesh official pricing',
+    surgeApplies:true
+  },
+  {
+    id:'pathao', name:'Pathao Bike', emoji:'🛵', color:'#EF4444',
+    baseFare:25, perKm:15, perMin:0.5, minFare:50,
+    avgSpeedKmh:28, capacity:1, ac:false,
+    note:'Pathao revised fare (Tk 25 base + Tk 15/km, min Tk 50)',
+    source:'Pathao official statement Aug 2022',
+    surgeApplies:true
+  },
+  {
+    id:'uber_x', name:'UberX Car', emoji:'🚗', color:'#3B82F6',
+    baseFare:40, perKm:21, perMin:3, minFare:80,
+    avgSpeedKmh:22, capacity:4, ac:true,
+    note:'UberX: Tk 40 base + Tk 21/km + Tk 3/min',
+    source:'Uber Dhaka official fare update',
+    surgeApplies:true
+  },
+  {
+    id:'cng', name:'CNG Auto', emoji:'🛺', color:'#10B981',
+    baseFare:40, perKm:12, perMin:2, minFare:60,
+    avgSpeedKmh:20, capacity:3, ac:false,
+    note:'Govt meter: Tk 40 for 1st 2km, Tk 12/km after + Tk 2/min. Real street rate often 1.5–2x. Negotiate before boarding.',
+    source:'BRTA government-set meter rate (Feb 2025)',
+    surgeApplies:false, negotiated:true
+  },
+  {
+    id:'rickshaw', name:'Rickshaw', emoji:'🚲', color:'#8B5CF6',
+    baseFare:20, perKm:20, perMin:0, minFare:30,
+    avgSpeedKmh:10, capacity:2, ac:false,
+    note:'No official meter. Negotiated fare. Typical: Tk 20–30/km. Always agree price BEFORE riding.',
+    source:'Common Dhaka street rate (negotiated)',
+    surgeApplies:false, negotiated:true
+  },
+  {
+    id:'bus', name:'BRTC/Local Bus', emoji:'🚌', color:'#6366F1',
+    baseFare:10, perKm:2, perMin:0, minFare:10,
+    avgSpeedKmh:15, capacity:50, ac:false,
+    note:'Fixed flat fares per route. Tk 10–20 within city. Tk 2/km is an approximation.',
+    source:'BRTC & local bus approximate fares',
+    surgeApplies:false, fixed:true
+  },
+];
+
+// Dhaka locations with GPS coords
+const LOCATIONS = [
+  {name:'Dhanmondi',lat:23.7461,lng:90.3742},
+  {name:'Gulshan 1',lat:23.7860,lng:90.4130},
+  {name:'Gulshan 2',lat:23.7943,lng:90.4145},
+  {name:'Banani',lat:23.7937,lng:90.3976},
+  {name:'Mirpur 1',lat:23.8054,lng:90.3592},
+  {name:'Mirpur 10',lat:23.8223,lng:90.3654},
+  {name:'Mirpur 12',lat:23.8330,lng:90.3607},
+  {name:'Uttara',lat:23.8759,lng:90.3795},
+  {name:'Uttara Sector 7',lat:23.8690,lng:90.3830},
+  {name:'Motijheel',lat:23.7330,lng:90.4182},
+  {name:'Old Dhaka / Lalbagh',lat:23.7196,lng:90.3876},
+  {name:'Puran Dhaka',lat:23.7099,lng:90.4071},
+  {name:'Wari',lat:23.7178,lng:90.4197},
+  {name:'Hazaribagh',lat:23.7244,lng:90.3698},
+  {name:'Mohammadpur',lat:23.7630,lng:90.3563},
+  {name:'Rayer Bazar',lat:23.7534,lng:90.3480},
+  {name:'Shyamoli',lat:23.7724,lng:90.3651},
+  {name:'Kalabagan',lat:23.7528,lng:90.3762},
+  {name:'Panthapath',lat:23.7524,lng:90.3874},
+  {name:'Farmgate',lat:23.7577,lng:90.3918},
+  {name:'Tejgaon',lat:23.7685,lng:90.4017},
+  {name:'Bashundhara R/A',lat:23.8141,lng:90.4269},
+  {name:'Badda',lat:23.7788,lng:90.4274},
+  {name:'Rampura',lat:23.7656,lng:90.4271},
+  {name:'Malibagh',lat:23.7509,lng:90.4163},
+  {name:'Mouchak',lat:23.7490,lng:90.4178},
+  {name:'Khilgaon',lat:23.7455,lng:90.4266},
+  {name:'Shantinagar',lat:23.7369,lng:90.4139},
+  {name:'Paltan',lat:23.7342,lng:90.4143},
+  {name:'Shahbag',lat:23.7387,lng:90.3963},
+  {name:'Nilkhet',lat:23.7330,lng:90.3875},
+  {name:'New Market',lat:23.7350,lng:90.3864},
+  {name:'Elephant Road',lat:23.7408,lng:90.3843},
+  {name:'Maghbazar',lat:23.7463,lng:90.4064},
+  {name:'Moghbazar',lat:23.7520,lng:90.4080},
+  {name:'Kawran Bazar',lat:23.7524,lng:90.3924},
+  {name:'Hazrat Shahjalal Airport',lat:23.8506,lng:90.3975},
+  {name:'Cantonment',lat:23.8208,lng:90.3981},
+  {name:'Mohakhali',lat:23.7804,lng:90.4020},
+  {name:'Baridhara',lat:23.7984,lng:90.4153},
+  {name:'Niketan',lat:23.7758,lng:90.4154},
+  {name:'DOHS Baridhara',lat:23.8211,lng:90.4017},
+  {name:'Vatara',lat:23.8050,lng:90.4320},
+  {name:'Aftabnagar',lat:23.7718,lng:90.4395},
+  {name:'Bashabo',lat:23.7560,lng:90.4384},
+  {name:'Mugda',lat:23.7514,lng:90.4340},
+  {name:'Demra',lat:23.7132,lng:90.4587},
+  {name:'Narayanganj',lat:23.6238,lng:90.4996},
+  {name:'Keraniganj',lat:23.6789,lng:90.3542},
+  {name:'Savar',lat:23.8573,lng:90.2662},
+  {name:'Ashulia',lat:23.8968,lng:90.3187},
+  {name:'Gazipur',lat:23.9999,lng:90.4203},
+  {name:'Tongi',lat:23.9003,lng:90.4014},
+];
+
+const POPULAR_ROUTES = [
+  {from:'Dhanmondi', to:'Gulshan 2'},
+  {from:'Mirpur 10', to:'Farmgate'},
+  {from:'Uttara', to:'Motijheel'},
+  {from:'Banani', to:'Shahbag'},
+  {from:'Mohammadpur', to:'Gulshan 1'},
+  {from:'Bashundhara R/A', to:'Kawran Bazar'},
+  {from:'Rampura', to:'Dhanmondi'},
+  {from:'Mirpur 10', to:'Paltan'},
+];
+
+const WEATHER_OPTIONS = [
+  {value:'clear', label:'Clear', icon:'☀️'},
+  {value:'cloudy', label:'Cloudy', icon:'⛅'},
+  {value:'rain', label:'Rain', icon:'🌧️'},
+  {value:'heavy_rain', label:'Heavy Rain', icon:'🌩️'},
+  {value:'storm', label:'Storm', icon:'⛈️'},
+];
+
+// ═══════════════════════════════════════════════════════
+// FARE ENGINE
+// ═══════════════════════════════════════════════════════
+
+function haversineKm(loc1, loc2) {
+  const R = 6371;
+  const dLat = (loc2.lat - loc1.lat) * Math.PI / 180;
+  const dLng = (loc2.lng - loc1.lng) * Math.PI / 180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(loc1.lat*Math.PI/180)*Math.cos(loc2.lat*Math.PI/180)*Math.sin(dLng/2)**2;
+  const dist = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return Math.max(dist * 1.38, 0.5); // road factor 1.38 for Dhaka
+}
+
+function findLocation(name) {
+  return LOCATIONS.find(l => l.name.toLowerCase() === name.toLowerCase());
+}
+
+function getTrafficMultiplier(hour, dayOfWeek) {
+  const isWeekday = dayOfWeek >= 1 && dayOfWeek <= 5;
+  // Friday lunch rush is also heavy (Jummah)
+  if (isWeekday && hour >= 8 && hour <= 10) return {mult:1.45, label:'Heavy', color:'var(--red)'};
+  if (isWeekday && hour >= 17 && hour <= 20) return {mult:1.55, label:'Very Heavy', color:'var(--red)'};
+  if (isWeekday && hour >= 12 && hour <= 14) return {mult:1.2, label:'Moderate', color:'var(--yellow)'};
+  if (dayOfWeek === 5 && hour >= 12 && hour <= 14) return {mult:1.35, label:'Heavy (Jummah)', color:'var(--red)'};
+  if (hour >= 22 || hour <= 5) return {mult:0.85, label:'Light', color:'var(--green)'};
+  return {mult:1.0, label:'Normal', color:'var(--green)'};
+}
+
+function getWeatherMultiplier(weather) {
+  const m = {clear:1.0, cloudy:1.05, rain:1.35, heavy_rain:1.65, storm:2.0};
+  return m[weather] || 1.0;
+}
+
+function getSurgeMultiplier(weather, hour, dayOfWeek=1) {
+  const traffic = getTrafficMultiplier(hour, dayOfWeek);
+  const wm = getWeatherMultiplier(weather);
+  return Math.min(parseFloat((traffic.mult * wm).toFixed(2)), 2.5);
+}
+
+function predictFare(transport, distKm, weather, hour, dayOfWeek=1) {
+  const t = transport;
+  const traffic = getTrafficMultiplier(hour, dayOfWeek);
+
+  let rawFare;
+  if (t.fixed) {
+    // Bus: flat ~Tk 10 short, Tk 15 medium
+    rawFare = distKm < 5 ? 10 : distKm < 15 ? 15 : 20;
+  } else if (t.id === 'cng') {
+    // CNG: Govt meter = Tk 40 for first 2km, Tk 12/km after
+    const meterFare = distKm <= 2 ? 40 : 40 + (distKm - 2) * 12;
+    // Add expected traffic waiting time
+    const waitMin = distKm * 2 * (traffic.mult - 0.7); // rough estimate
+    const meterWithWait = meterFare + waitMin * 2;
+    // Street reality: CNG drivers typically charge 1.5–1.8x meter
+    rawFare = meterWithWait * 1.6;
+  } else if (t.negotiated) {
+    // Rickshaw: purely distance-based, no app surge
+    rawFare = t.baseFare + distKm * t.perKm;
+    // Slight time adjustment for rush hour (harder to get)
+    if (traffic.mult >= 1.4) rawFare *= 1.15;
+  } else {
+    // App-based: base + per km + per min (estimated travel time)
+    const effectiveSpeed = t.avgSpeedKmh / traffic.mult;
+    const travelMin = (distKm / effectiveSpeed) * 60;
+    rawFare = t.baseFare + distKm * t.perKm + travelMin * t.perMin;
+    // Apply surge
+    const surge = getWeatherMultiplier(weather);
+    rawFare *= surge;
+  }
+
+  rawFare = Math.max(rawFare, t.minFare);
+  const fareRounded = Math.ceil(rawFare / 5) * 5;
+
+  const effectiveSpeed = t.avgSpeedKmh / traffic.mult;
+  const travelMin = Math.max(Math.round((distKm / effectiveSpeed) * 60), 5);
+
+  const surge = t.surgeApplies ? getSurgeMultiplier(weather, hour, dayOfWeek) : 1.0;
+
+  return {
+    ...t,
+    distKm: Math.round(distKm * 10) / 10,
+    fare: fareRounded,
+    fareMin: Math.round(fareRounded * 0.88 / 5) * 5,
+    fareMax: Math.round(fareRounded * 1.15 / 5) * 5,
+    travelMin,
+    traffic,
+    surge,
+    surgeLabel: getSurgeLabel(surge),
+  };
+}
+
+function getSurgeLabel(surge) {
+  if (surge >= 1.8) return {text:'Very High Surge', color:'var(--red)'};
+  if (surge >= 1.4) return {text:'High Surge', color:'var(--red)'};
+  if (surge >= 1.2) return {text:'Moderate Surge', color:'var(--yellow)'};
+  if (surge > 1.0) return {text:'Low Surge', color:'var(--yellow)'};
+  return {text:'Normal', color:'var(--green)'};
+}
+
+function getRecommendation(results, weather, hour) {
+  const sorted = [...results].sort((a,b) => a.fare - b.fare);
+  const fastest = [...results].sort((a,b) => a.travelMin - b.travelMin)[0];
+  const cheapest = sorted[0];
+  const isRain = ['rain','heavy_rain','storm'].includes(weather);
+  const isRush = (hour>=8&&hour<=10)||(hour>=17&&hour<=20);
+
+  let rec, reason;
+  if (isRain) {
+    const covered = results.filter(r => ['cng','uber_x'].includes(r.id));
+    rec = covered.sort((a,b)=>a.fare-b.fare)[0] || cheapest;
+    reason = `🌧️ Rainy weather — ${rec.name} keeps you covered. Expect high demand.`;
+  } else if (isRush) {
+    const bikes = results.filter(r => ['uber_moto','pathao'].includes(r.id));
+    rec = bikes.sort((a,b)=>a.travelMin-b.travelMin)[0] || fastest;
+    reason = `🚦 Rush hour — ${rec.name} cuts through traffic faster than cars.`;
+  } else {
+    rec = cheapest;
+    reason = `💰 ${rec.name} is most affordable for this route right now.`;
+  }
+  return {rec, reason, cheapest, fastest};
+}
+
+// ═══════════════════════════════════════════════════════
+// UI HELPERS
+// ═══════════════════════════════════════════════════════
+
+let currentSurgeWeather = 'clear';
+let toastTimer;
+
+function toast(msg, type='success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast show ${type}`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-btn')[['home','compare','surge','info'].indexOf(id)].classList.add('active');
+  if (id === 'surge') renderSurgePage();
+  if (id === 'info') renderInfoPage();
+}
+
+function formatHour(h) {
+  const ampm = h < 12 ? 'AM' : 'PM';
+  const hh = h === 0 ? 12 : h > 12 ? h-12 : h;
+  return `${hh}:00 ${ampm}`;
+}
+
+function updateHour(val, displayId='hour-display') {
+  document.getElementById(displayId).textContent = formatHour(parseInt(val));
+}
+
+function autocomplete(input, listId) {
+  const q = input.value.trim().toLowerCase();
+  const list = document.getElementById(listId);
+  if (!q) { list.style.display='none'; return; }
+  const matches = LOCATIONS.filter(l => l.name.toLowerCase().includes(q)).slice(0, 8);
+  if (!matches.length) { list.style.display='none'; return; }
+  list.innerHTML = matches.map(l =>
+    `<div class="autocomplete-item" onmousedown="selectLocation('${l.name}','${input.id}','${listId}')" ontouchend="selectLocation('${l.name}','${input.id}','${listId}')">
+      <div class="autocomplete-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+      ${l.name}
+    </div>`
+  ).join('');
+  list.style.display='block';
+}
+
+function showSuggestions(listId, val) {
+  const input = document.querySelector(`[oninput*="${listId}"]`) || document.getElementById(listId.replace('-list',''));
+  if (!val) autocomplete({value:'', id:input?.id}, listId);
+  else autocomplete({value:val, id:input?.id}, listId);
+}
+
+function selectLocation(name, inputId, listId) {
+  document.getElementById(inputId).value = name;
+  document.getElementById(listId).style.display = 'none';
+}
+
+function swapLocations() {
+  const p = document.getElementById('pickup');
+  const d = document.getElementById('destination');
+  const tmp = p.value; p.value = d.value; d.value = tmp;
+}
+
+// Close autocomplete on outside tap
+document.addEventListener('click', (e) => {
+  document.querySelectorAll('.autocomplete-list').forEach(l => {
+    if (!l.parentElement.contains(e.target)) l.style.display = 'none';
+  });
+});
+
+// ═══════════════════════════════════════════════════════
+// HOME PAGE
+// ═══════════════════════════════════════════════════════
+
+function initHome() {
+  const now = new Date();
+  const h = now.getHours();
+  document.getElementById('hour-slider').value = h;
+  document.getElementById('c-hour-slider').value = h;
+  document.getElementById('surge-hour').value = h;
+  updateHour(h, 'hour-display');
+  updateHour(h, 'c-hour-display');
+  updateHour(h, 'surge-hour-display');
+
+  // Render popular routes
+  const rc = document.getElementById('quick-routes');
+  rc.innerHTML = POPULAR_ROUTES.map(r =>
+    `<div class="route-chip" onclick="setRoute('${r.from}','${r.to}')">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>
+      ${r.from} → ${r.to}
+    </div>`
+  ).join('');
+}
+
+function setRoute(from, to) {
+  document.getElementById('pickup').value = from;
+  document.getElementById('destination').value = to;
+  predict();
+}
+
+function predict() {
+  const pickup = document.getElementById('pickup').value.trim();
+  const dest = document.getElementById('destination').value.trim();
+  const weather = document.getElementById('weather').value;
+  const hour = parseInt(document.getElementById('hour-slider').value);
+
+  if (!pickup) { toast('Enter a pickup location', 'error'); return; }
+  if (!dest) { toast('Enter a destination', 'error'); return; }
+  if (pickup.toLowerCase() === dest.toLowerCase()) { toast('Pickup and destination cannot be the same', 'error'); return; }
+
+  const locA = findLocation(pickup);
+  const locB = findLocation(dest);
+  if (!locA) { toast(`Location not found: "${pickup}"`, 'error'); return; }
+  if (!locB) { toast(`Location not found: "${dest}"`, 'error'); return; }
+
+  document.getElementById('skeletons').style.display = 'block';
+  document.getElementById('results').style.display = 'none';
+
+  setTimeout(() => {
+    const distKm = haversineKm(locA, locB);
+    const dayOfWeek = new Date().getDay();
+    const results = TRANSPORTS.map(t => predictFare(t, distKm, weather, hour, dayOfWeek));
+    results.sort((a,b) => a.fare - b.fare);
+    const {rec, reason, cheapest, fastest} = getRecommendation(results, weather, hour);
+
+    document.getElementById('skeletons').style.display = 'none';
+    document.getElementById('results').style.display = 'block';
+
+    // Rec box
+    document.getElementById('rec-box-wrap').innerHTML = `
+      <div class="rec-box fade-up section">
+        <div class="rec-box-title">✨ AI Recommendation</div>
+        <div class="rec-box-name">${rec.emoji} ${rec.name}</div>
+        <div class="rec-box-reason">${reason}</div>
+        <div class="rec-box-stats">
+          <div class="rec-stat"><div class="rec-stat-val">৳${rec.fare}</div><div class="rec-stat-label">Est. Fare</div></div>
+          <div class="rec-stat"><div class="rec-stat-val">${rec.travelMin}m</div><div class="rec-stat-label">Travel Time</div></div>
+          <div class="rec-stat"><div class="rec-stat-val">${distKm.toFixed(1)} km</div><div class="rec-stat-label">Distance</div></div>
+        </div>
+      </div>`;
+
+    // Ride cards
+    document.getElementById('ride-cards').innerHTML = results.map((r, i) => {
+      const isRec = r.id === rec.id;
+      const surgeInfo = r.surgeLabel;
+      return `
+        <div class="ride-card ${isRec ? 'recommended' : ''} fade-up fade-up-d${Math.min(i+1,3)}" onclick="openRideDetail('${r.id}','${pickup}','${dest}',${r.fare},${r.fareMin},${r.fareMax},${r.travelMin},${distKm.toFixed(1)})">
+          <div class="ride-card-accent" style="background:${r.color}"></div>
+          ${isRec ? '<div class="rec-badge">⭐ Best Pick</div>' : ''}
+          <div class="ride-card-top">
+            <div class="ride-icon" style="background:${r.color}18">${r.emoji}</div>
+            <div class="ride-info">
+              <div class="ride-name">${r.name}</div>
+              <div class="ride-meta">⏱ ${r.travelMin} min &nbsp;·&nbsp; ${r.capacity} seat${r.capacity>1?'s':''} &nbsp;·&nbsp; ${r.distKm} km</div>
+            </div>
+            <div class="ride-fare">
+              <div class="ride-price">৳${r.fare}</div>
+              <div class="ride-range">৳${r.fareMin}–${r.fareMax}</div>
+              ${r.surge > 1.0 ? `<div class="ride-surge" style="color:${surgeInfo.color}">↑ ${r.surge}x surge</div>` : ''}
+            </div>
+          </div>
+          <div class="ride-chips">
+            <div class="chip chip-gray" style="color:${r.traffic.color}">🚦 ${r.traffic.label}</div>
+            ${r.ac ? '<div class="chip chip-blue">❄️ AC</div>' : ''}
+            ${r.negotiated ? '<div class="chip chip-yellow">🤝 Negotiate</div>' : ''}
+            ${r.fixed ? '<div class="chip chip-gray">🎫 Fixed</div>' : ''}
+            ${r.surgeApplies && r.surge > 1.2 ? `<div class="chip" style="background:rgba(239,68,68,.1);color:var(--red)">🔥 ${surgeInfo.text}</div>` : ''}
+          </div>
+        </div>`;
+    }).join('');
+
+    toast(`Fares calculated for ${distKm.toFixed(1)} km route`, 'success');
+  }, 600);
+}
+
+function openRideDetail(id, from, to, fare, fareMin, fareMax, time, dist) {
+  const t = TRANSPORTS.find(t => t.id === id);
+  if (!t) return;
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.7);display:flex;align-items:flex-end;';
+  modal.innerHTML = `
+    <div style="background:var(--bg2);border-radius:20px 20px 0 0;width:100%;padding:20px 20px calc(20px + env(safe-area-inset-bottom));max-width:480px;margin:0 auto">
+      <div style="width:36px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 16px"></div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <div style="width:52px;height:52px;border-radius:14px;background:${t.color}18;font-size:26px;display:flex;align-items:center;justify-content:center">${t.emoji}</div>
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800">${t.name}</div>
+          <div style="font-size:13px;color:var(--text2)">${from} → ${to}</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px">
+        <div style="background:var(--bg3);border-radius:10px;padding:12px;text-align:center">
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--orange)">৳${fare}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">Est. Fare</div>
+        </div>
+        <div style="background:var(--bg3);border-radius:10px;padding:12px;text-align:center">
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800">${time}m</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">Travel Time</div>
+        </div>
+        <div style="background:var(--bg3);border-radius:10px;padding:12px;text-align:center">
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800">${dist}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">Km</div>
+        </div>
+      </div>
+      <div class="fare-note" style="margin-bottom:16px"><strong>Fare Range:</strong> ৳${fareMin} – ৳${fareMax}<br><strong>Note:</strong> ${t.note}</div>
+      ${t.negotiated ? `<div style="background:rgba(234,179,8,.08);border:1px solid rgba(234,179,8,.2);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--yellow);margin-bottom:16px">⚠️ Always agree on the fare <strong>before</strong> boarding. No app — negotiate directly with the driver.</div>` : ''}
+      <button class="btn btn-ghost" onclick="this.closest('div[style*=fixed]').remove()">Close</button>
+    </div>`;
+  modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+  document.body.appendChild(modal);
+}
+
+// ═══════════════════════════════════════════════════════
+// COMPARE PAGE
+// ═══════════════════════════════════════════════════════
+
+function compareAll() {
+  const pickup = document.getElementById('c-pickup').value.trim();
+  const dest = document.getElementById('c-dest').value.trim();
+  const weather = document.getElementById('c-weather').value;
+  const hour = parseInt(document.getElementById('c-hour-slider').value);
+
+  if (!pickup || !dest) { toast('Enter both locations', 'error'); return; }
+  const locA = findLocation(pickup);
+  const locB = findLocation(dest);
+  if (!locA || !locB) { toast('Location not found', 'error'); return; }
+
+  const distKm = haversineKm(locA, locB);
+  const dayOfWeek = new Date().getDay();
+  const results = TRANSPORTS.map(t => predictFare(t, distKm, weather, hour, dayOfWeek));
+  results.sort((a,b) => a.fare - b.fare);
+  const {rec} = getRecommendation(results, weather, hour);
+
+  // Table
+  const tableWrap = document.getElementById('compare-table-wrap');
+  tableWrap.innerHTML = `
+    <div class="card section">
+      <div class="card-body" style="padding:0">
+        <table class="compare-table" style="width:100%">
+          <thead><tr>
+            <th>Transport</th>
+            <th>Fare</th>
+            <th>Time</th>
+            <th>Surge</th>
+          </tr></thead>
+          <tbody>
+            ${results.map(r => `
+              <tr class="${r.id===rec.id?'rec-row':''}">
+                <td><div class="t-name">${r.emoji} ${r.name}${r.id===rec.id?' <span class="chip chip-orange" style="font-size:9px;padding:2px 6px">Best</span>':''}</div>
+                  <div style="font-size:10px;color:var(--text3);margin-top:2px">৳${r.fareMin}–${r.fareMax}</div>
+                </td>
+                <td class="t-price">৳${r.fare}</td>
+                <td class="t-time">${r.travelMin}m</td>
+                <td style="font-size:12px;color:${r.surgeLabel.color}">${r.surge > 1.0 ? r.surge+'x' : '—'}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+
+  // Bar chart
+  const maxFare = Math.max(...results.map(r => r.fare));
+  document.getElementById('compare-bars').innerHTML = `
+    <div style="font-family:'Syne',sans-serif;font-weight:700;margin-bottom:12px">Fare Comparison (৳)</div>
+    ${results.map(r => `
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <div style="width:30px;text-align:center;font-size:14px">${r.emoji}</div>
+        <div style="flex:1">
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px">
+            <span style="color:var(--text2)">${r.name}</span>
+            <span style="font-family:'Syne',sans-serif;font-weight:700">৳${r.fare}</span>
+          </div>
+          <div style="height:8px;background:var(--bg4);border-radius:4px;overflow:hidden">
+            <div style="height:100%;width:${(r.fare/maxFare*100).toFixed(1)}%;background:${r.color};border-radius:4px;transition:.6s ease"></div>
+          </div>
+        </div>
+      </div>`).join('')}
+    <div style="font-size:11px;color:var(--text3);margin-top:8px">Route: ${pickup} → ${dest} &nbsp;·&nbsp; ${distKm.toFixed(1)} km</div>`;
+
+  document.getElementById('compare-results').style.display = 'block';
+  toast('Comparison ready!', 'success');
+}
+
+// ═══════════════════════════════════════════════════════
+// SURGE PAGE
+// ═══════════════════════════════════════════════════════
+
+function renderSurgePage() {
+  // Weather grid
+  const grid = document.getElementById('surge-weather-grid');
+  if (!grid.innerHTML) {
+    grid.innerHTML = WEATHER_OPTIONS.map(w => `
+      <div class="weather-opt ${w.value==='clear'?'active':''}" onclick="setSurgeWeather('${w.value}',this)">
+        <div class="wx-icon">${w.icon}</div>
+        <div>${w.label}</div>
+      </div>`).join('');
+  }
+  updateSurge();
+  renderSurgeChart();
+}
+
+function setSurgeWeather(val, el) {
+  currentSurgeWeather = val;
+  document.querySelectorAll('.weather-opt').forEach(e => e.classList.remove('active'));
+  el.classList.add('active');
+  updateSurge();
+  renderSurgeChart();
+}
+
+function setHourQuick(h) {
+  document.getElementById('surge-hour').value = h;
+  updateSurge();
+}
+
+function updateSurge() {
+  const hour = parseInt(document.getElementById('surge-hour').value);
+  updateHour(hour, 'surge-hour-display');
+  const dayOfWeek = new Date().getDay();
+  const surge = getSurgeMultiplier(currentSurgeWeather, hour, dayOfWeek);
+  const traffic = getTrafficMultiplier(hour, dayOfWeek);
+  const wm = getWeatherMultiplier(currentSurgeWeather);
+
+  const pct = Math.min((surge - 0.8) / (2.5 - 0.8) * 100, 100);
+  const color = surge >= 1.8 ? 'var(--red)' : surge >= 1.4 ? 'var(--yellow)' : 'var(--green)';
+  const label = getSurgeLabel(surge);
+
+  document.getElementById('surge-num').textContent = surge.toFixed(2) + 'x';
+  document.getElementById('surge-num').style.color = color;
+  document.getElementById('surge-label').textContent = label.text;
+  document.getElementById('surge-label').style.color = color;
+  document.getElementById('surge-bar').style.width = pct + '%';
+  document.getElementById('surge-bar').style.background = color;
+
+  let reason = '✅ Normal pricing conditions';
+  if (wm > 1.5) reason = '🌩️ Storm/heavy rain causing very high demand';
+  else if (wm > 1.2) reason = '🌧️ Rain increasing demand for covered transport';
+  else if (traffic.label.includes('Very Heavy')) reason = '🚗 Evening rush hour — peak demand 5–8 PM';
+  else if (traffic.label.includes('Heavy')) reason = '🚗 Morning rush hour — peak demand 8–10 AM';
+  else if (hour >= 22 || hour <= 5) reason = '🌙 Late night — less traffic, lower demand';
+  document.getElementById('surge-reason').textContent = reason;
+
+  // Fare impact
+  const baseFare = 150;
+  document.getElementById('surge-impact').innerHTML = `<div class="card-body">
+    ${TRANSPORTS.filter(t => t.surgeApplies).map(t => {
+      const adj = Math.ceil(baseFare * (t.id==='bus'||t.negotiated ? 1.0 : getWeatherMultiplier(currentSurgeWeather)) / 5) * 5;
+      const diff = adj - baseFare;
+      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px">${t.emoji} ${t.name}</div>
+        <div style="text-align:right">
+          <span style="font-family:'Syne',sans-serif;font-weight:700">৳${adj}</span>
+          ${diff > 0 ? `<span style="font-size:11px;color:var(--red);margin-left:6px">+৳${diff}</span>` : '<span style="font-size:11px;color:var(--green);margin-left:6px">No surge</span>'}
+        </div>
+      </div>`;
+    }).join('')}
+    <div style="font-size:11px;color:var(--text3);margin-top:8px">Based on ৳150 base fare example</div>
+  </div>`;
+}
+
+function renderSurgeChart() {
+  const dayOfWeek = new Date().getDay();
+  const currentHour = parseInt(document.getElementById('surge-hour').value);
+  const bars = document.getElementById('surge-chart');
+  const data = Array.from({length:24},(_,h) => getSurgeMultiplier(currentSurgeWeather, h, dayOfWeek));
+  const maxS = Math.max(...data);
+
+  bars.innerHTML = data.map((s, h) => {
+    const pct = Math.max((s - 0.7) / (maxS - 0.7) * 100, 4);
+    const color = s >= 1.5 ? 'var(--red)' : s >= 1.2 ? 'var(--yellow)' : 'var(--green)';
+    const isCurrent = h === currentHour;
+    return `<div class="bar-col" onclick="document.getElementById('surge-hour').value=${h};updateSurge()">
+      <div class="bar" style="height:${pct}%;background:${color};opacity:${isCurrent?1:0.55};outline:${isCurrent?'2px solid var(--orange)':'none'};outline-offset:-1px"></div>
+      <div class="bar-lbl">${h%6===0 ? (h===0?'12a':h===12?'12p':h<12?h+'a':(h-12)+'p') : ''}</div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════
+// INFO PAGE
+// ═══════════════════════════════════════════════════════
+
+function renderInfoPage() {
+  const el = document.getElementById('fare-info-content');
+  if (el.innerHTML) return;
+  el.innerHTML = `
+    <div style="padding-bottom:8px">
+      <div style="background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.2);border-radius:var(--radius);padding:12px 14px;margin-bottom:12px;font-size:13px;color:var(--text2);line-height:1.5">
+        ℹ️ All fares are sourced from official Uber/Pathao pricing and BRTA government orders. Fares are in <strong style="color:var(--text)">Bangladeshi Taka (৳ BDT)</strong>.
+      </div>
+      ${TRANSPORTS.map(t => `
+        <div class="card section">
+          <div class="card-body">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+              <div style="width:44px;height:44px;border-radius:12px;background:${t.color}18;font-size:22px;display:flex;align-items:center;justify-content:center">${t.emoji}</div>
+              <div>
+                <div style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700">${t.name}</div>
+                <div style="font-size:11px;color:var(--text3);margin-top:2px">Seats: ${t.capacity} &nbsp;·&nbsp; ${t.ac?'AC ✅':'No AC'}</div>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px">
+              <div style="background:var(--bg3);border-radius:8px;padding:8px;text-align:center">
+                <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700">৳${t.baseFare}</div>
+                <div style="font-size:10px;color:var(--text3)">Base Fare</div>
+              </div>
+              <div style="background:var(--bg3);border-radius:8px;padding:8px;text-align:center">
+                <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700">৳${t.perKm}/km</div>
+                <div style="font-size:10px;color:var(--text3)">Per KM</div>
+              </div>
+              <div style="background:var(--bg3);border-radius:8px;padding:8px;text-align:center">
+                <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700">৳${t.minFare}</div>
+                <div style="font-size:10px;color:var(--text3)">Min Fare</div>
+              </div>
+              <div style="background:var(--bg3);border-radius:8px;padding:8px;text-align:center">
+                <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700">${t.avgSpeedKmh} km/h</div>
+                <div style="font-size:10px;color:var(--text3)">Avg Speed</div>
+              </div>
+            </div>
+            ${t.perMin > 0 ? `<div style="font-size:12px;color:var(--text2);margin-bottom:8px">⏱️ Per minute (traffic/wait): ৳${t.perMin}/min</div>` : ''}
+            <div class="fare-note">${t.note}</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:6px">Source: ${t.source}</div>
+            ${t.surgeApplies ? '<div class="chip chip-orange" style="margin-top:8px">App surge pricing applies</div>' : ''}
+            ${t.negotiated ? '<div class="chip chip-yellow" style="margin-top:8px">🤝 Negotiated fare — agree before boarding</div>' : ''}
+            ${t.fixed ? '<div class="chip chip-gray" style="margin-top:8px">🎫 Fixed government fares</div>' : ''}
+          </div>
+        </div>`).join('')}
+
+      <!-- TIPS -->
+      <div class="card section">
+        <div class="card-body">
+          <div style="font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:10px">💡 Dhaka Commuter Tips</div>
+          ${[
+            ['Rain season (Jun–Oct)', 'App bikes (Moto/Pathao) may become unavailable. CNG demand spikes. Book car in advance.'],
+            ['Rush hours (8–10am, 5–8pm)', 'Bikes are fastest — they weave through traffic. Cars can sit for 30+ mins.'],
+            ['CNG real street rate', 'Meter rate is ৳40 for 2km + ৳12/km, but drivers rarely use meter. Real fare is typically 1.5–2× meter. Negotiate.'],
+            ['Rickshaw', 'Best for short distances under 2km. No app — agree price before boarding. Typical: ৳30–60 for nearby destinations.'],
+            ['Bus (BRTC)', 'Cheapest option. Routes can be hard to figure out. Best if you know the route well.'],
+            ['Night rides (10pm–5am)', 'Less traffic but CNG/rickshaw may charge premium. Uber/Pathao tend to have lower surge at night.'],
+          ].map(([title, desc]) => `
+            <div style="padding:8px 0;border-bottom:1px solid var(--border)">
+              <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px">${title}</div>
+              <div style="font-size:12px;color:var(--text2);line-height:1.4">${desc}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <div class="disclaimer" style="padding-bottom:16px">App developed for informational purposes. Fares verified from Uber BD, Pathao, and BRTA official sources. Always confirm final fare in the app or with your driver.</div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+
+document.addEventListener('DOMContentLoaded', initHome);
+</script>
+</body>
+</html>

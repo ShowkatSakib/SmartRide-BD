@@ -1,0 +1,121 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    height: 100%;
+    background: #0f0f14;
+    color: #e8e8f4;
+    font-family: 'DM Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  h1,h2,h3,h4,h5 { font-family: 'Syne', sans-serif; }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: #16161e; }
+  ::-webkit-scrollbar-thumb { background: #2e2e3f; border-radius: 2px; }
+}
+
+@layer components {
+  /* Glass card */
+  .glass-card {
+    background: rgba(22, 22, 30, 0.85);
+    backdrop-filter: blur(12px);
+    border: 1px solid #2e2e3f;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  /* Inputs */
+  .input-field {
+    @apply w-full bg-[#1e1e2a] border border-[#2e2e3f] rounded-xl px-4 py-3
+           text-[#e8e8f4] text-sm placeholder-[#666685]
+           focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/30
+           transition-all duration-200;
+    font-family: 'DM Sans', sans-serif;
+    -webkit-appearance: none;
+  }
+  select.input-field {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23666685' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+    cursor: pointer;
+  }
+
+  /* Buttons */
+  .btn-primary {
+    @apply flex items-center justify-center gap-2 w-full py-3.5 px-5
+           bg-orange-500 hover:bg-orange-600 active:scale-[.98]
+           text-white font-semibold rounded-xl
+           transition-all duration-150 cursor-pointer border-none
+           disabled:opacity-50 disabled:cursor-not-allowed;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    box-shadow: 0 4px 16px rgba(249,115,22,.28);
+  }
+  .btn-ghost {
+    @apply flex items-center justify-center gap-2 w-full py-3 px-4
+           bg-[#1e1e2a] hover:bg-[#252533] active:scale-[.98]
+           text-[#e8e8f4] font-medium rounded-xl border border-[#2e2e3f]
+           transition-all duration-150 cursor-pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+  }
+
+  /* Chips */
+  .chip { @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold; }
+  .chip-orange { background: rgba(249,115,22,.12); color: #fb923c; border: 1px solid rgba(249,115,22,.25); }
+  .chip-green  { background: rgba(34,197,94,.1);  color: #22c55e; }
+  .chip-red    { background: rgba(239,68,68,.1);  color: #ef4444; }
+  .chip-yellow { background: rgba(234,179,8,.1);  color: #eab308; }
+  .chip-blue   { background: rgba(59,130,246,.1); color: #60a5fa; }
+  .chip-gray   { background: #1e1e2a; color: #a0a0c0; border: 1px solid #2e2e3f; }
+
+  /* Shimmer skeleton */
+  .shimmer {
+    background: linear-gradient(90deg, #1e1e2a 25%, #252533 50%, #1e1e2a 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.2s ease-in-out infinite;
+    border-radius: 12px;
+  }
+  @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+
+  /* Field label */
+  .field-label {
+    @apply block text-[10px] font-bold uppercase tracking-widest text-[#666685] mb-2;
+  }
+}
+
+/* Animations */
+@keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+.fade-up   { animation: fadeUp .35s ease forwards; }
+.delay-1   { animation-delay: .05s; opacity:0; }
+.delay-2   { animation-delay: .10s; opacity:0; }
+.delay-3   { animation-delay: .15s; opacity:0; }
+.delay-4   { animation-delay: .20s; opacity:0; }
+
+/* Range slider */
+input[type=range] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 4px;
+  background: #252533; border-radius: 2px; outline: none; cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: #f97316; cursor: pointer;
+  box-shadow: 0 0 0 3px rgba(249,115,22,.2);
+}
+input[type=range]::-moz-range-thumb {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: #f97316; cursor: pointer; border: none;
+}
+
+/* Bottom nav safe area */
+.bottom-nav { padding-bottom: env(safe-area-inset-bottom, 0px); }
+
+/* Page content — leave room for fixed bottom nav */
+.main-content { padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px)); }
